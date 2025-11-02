@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Upload - Image VCS{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📤 Upload Image</h2>
+    
+    {% if message %}
+    <div class="alert alert-success">
+        <strong>✓ Success:</strong> {{ message }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-error">
+        <strong>✗ Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="collection">Collection Name</label>
+            <input 
+                type="text" 
+                id="collection" 
+                name="collection" 
+                placeholder="e.g., photo, image_001" 
+                required 
+                value="{{ collection|default:'' }}"
+            />
+            <p style="color: var(--gray-500); font-size: 0.875rem; margin-top: 0.5rem;">
+                Use the same collection name for related versions
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image File</label>
+            <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                accept="image/*" 
+                required 
+                onchange="previewImage(this)"
+            />
+            <p style="color: var(--gray-500); font-size: 0.875rem; margin-top: 0.5rem;">
+                Supported formats: PNG, JPEG, GIF, WebP
+            </p>
+            <div id="imagePreview" style="display: none; margin-top: 1rem;">
+                <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 400px; border-radius: var(--radius); box-shadow: var(--shadow-md); border: 2px solid var(--gray-200);" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            ⬆️ Upload Image
+        </button>
+    </form>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+
+    {% if saved %}
+    <div class="info-box" style="margin-top: 1.5rem;">
+        <strong>Saved to:</strong> {{ saved }}
+    </div>
+    {% endif %}
+
+    {% if matrix %}
+    <div class="info-box" style="margin-top: 1.5rem;">
+        <strong>Matrix Path:</strong> {{ matrix }}
+    </div>
+    {% endif %}
+
+    {% if debug_matrix %}
+    <div class="alert alert-info" style="margin-top: 1.5rem;">
+        <strong>ℹ️ Info:</strong> {{ debug_matrix }}
+    </div>
+    {% endif %}
+
+    {% if debug_trace %}
+    <details style="margin-top: 1.5rem;">
+        <summary>Debug Trace</summary>
+        <pre style="background: var(--gray-100); padding: 1rem; border-radius: var(--radius); overflow-x: auto; font-size: 0.875rem; margin-top: 0.5rem;">{{ debug_trace }}</pre>
+    </details>
+    {% endif %}
+</div>
+{% endblock %}

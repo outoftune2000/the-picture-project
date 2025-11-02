@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Image Version Control System{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --success-light: #34d399;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --success: #34d399;
+            --success-light: #4ade80;
+            --danger: #f87171;
+            --danger-dark: #ef4444;
+            --warning: #fbbf24;
+            --info: #22d3ee;
+            --gray-50: #1f2937;
+            --gray-100: #374151;
+            --gray-200: #4b5563;
+            --gray-300: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-500: #d1d5db;
+            --gray-600: #e5e7eb;
+            --gray-700: #f3f4f6;
+            --gray-800: #f9fafb;
+            --gray-900: #ffffff;
+            --white: #111827;
+            --bg-gradient-start: #1e293b;
+            --bg-gradient-end: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Body text color in dark mode */
+        [data-theme="dark"] body {
+            color: var(--gray-900);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header h1 {
+            color: var(--gray-900);
+            font-size: 1.875rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1::before {
+            content: "📸";
+            font-size: 2rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-link.danger {
+            background: var(--gray-100);
+            color: var(--danger);
+        }
+
+        .nav-link.danger:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        h2 {
+            color: var(--gray-900);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: var(--white);
+            color: var(--gray-900);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="file"] {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: var(--success-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-500);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-600);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-color: var(--warning);
+            color: #92400e;
+        }
+
+        .alert-info {
+            background: #cffafe;
+            border-color: var(--info);
+            color: #164e63;
+        }
+
+        [data-theme="dark"] .alert-success {
+            background: #064e3b;
+            border-color: var(--success);
+            color: #d1fae5;
+        }
+
+        [data-theme="dark"] .alert-error {
+            background: #7f1d1d;
+            border-color: var(--danger);
+            color: #fee2e2;
+        }
+
+        [data-theme="dark"] .alert-warning {
+            background: rgba(120, 53, 15, 0.7);
+            border-color: var(--warning);
+            color: #fef3c7;
+        }
+
+        [data-theme="dark"] .alert-error {
+            background: rgba(127, 29, 29, 0.7);
+            border-color: var(--danger);
+            color: #fee2e2;
+        }
+
+        [data-theme="dark"] .alert-success {
+            background: rgba(6, 78, 59, 0.7);
+            border-color: var(--success);
+            color: #d1fae5;
+        }
+
+        [data-theme="dark"] .alert-info {
+            background: rgba(22, 78, 99, 0.7);
+            border-color: var(--info);
+            color: #cffafe;
+        }
+
+        .info-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        .info-box code {
+            background: var(--white);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            color: var(--gray-800);
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .file-list ul {
+            list-style: none;
+        }
+
+        .file-list li {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            transition: color 0.3s ease;
+        }
+
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+
+        details {
+            margin-top: 1rem;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            background: var(--gray-50);
+            margin-bottom: 0.5rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        details summary:hover {
+            background: var(--gray-100);
+        }
+
+        /* Ensure text colors adapt in dark mode */
+        p, span, div, li, td, th, strong, em {
+            color: var(--gray-800);
+            transition: color 0.3s ease;
+        }
+
+        /* Code blocks */
+        pre, code {
+            color: var(--gray-800);
+            transition: color 0.3s ease;
+        }
+
+        [data-theme="dark"] pre,
+        [data-theme="dark"] code,
+        [data-theme="dark"] p,
+        [data-theme="dark"] span,
+        [data-theme="dark"] div,
+        [data-theme="dark"] li,
+        [data-theme="dark"] td,
+        [data-theme="dark"] th,
+        [data-theme="dark"] strong,
+        [data-theme="dark"] em {
+            color: var(--gray-800);
+        }
+
+        /* Placeholder text */
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--gray-400);
+            opacity: 1;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder {
+            color: var(--gray-500);
+        }
+
+        /* Headings in dark mode */
+        [data-theme="dark"] h1,
+        [data-theme="dark"] h2,
+        [data-theme="dark"] h3,
+        [data-theme="dark"] h4,
+        [data-theme="dark"] h5,
+        [data-theme="dark"] h6 {
+            color: var(--gray-900);
+        }
+
+        /* Labels in dark mode */
+        [data-theme="dark"] label {
+            color: var(--gray-700);
+        }
+
+        /* Code blocks in dark mode */
+        [data-theme="dark"] code {
+            color: var(--gray-800);
+        }
+
+        [data-theme="dark"] pre {
+            color: var(--gray-800);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .nav {
+                flex-direction: column;
+            }
+
+            .nav-link {
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--gray-300);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--white);
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        [data-theme="dark"] .toggle-switch {
+            background: var(--primary);
+        }
+
+        [data-theme="dark"] .toggle-switch::before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="header">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="flex: 1;">
+                <h1>Image Version Control System</h1>
+                <nav class="nav">
+                    <a href="/" class="nav-link">🏠 Home</a>
+                    <a href="/upload/" class="nav-link">⬆️ Upload</a>
+                    <a href="/recombine/" class="nav-link">🔄 Recombine</a>
+                    <a href="/delete/" class="nav-link danger">🗑️ Delete All</a>
+                </nav>
+            </div>
+            <div class="theme-toggle">
+                <span class="toggle-label">🌙</span>
+                <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Theme management
+        function getTheme() {
+            return localStorage.getItem('theme') || 'light';
+        }
+
+        function setTheme(theme) {
+            localStorage.setItem('theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        // Initialize theme on page load
+        (function() {
+            const theme = getTheme();
+            setTheme(theme);
+        })();
+    </script>
+</body>
+</html>
+

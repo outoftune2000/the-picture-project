@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Image VCS{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Image Version Control System</h2>
+    <p style="color: var(--gray-600); margin-bottom: 2rem; font-size: 1.125rem;">
+        Efficiently track image versions, compute differences, and reconstruct versions using compressed matrix formats.
+    </p>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="number">📤</div>
+            <div class="label">Upload</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">🔄</div>
+            <div class="label">Recombine</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">🗑️</div>
+            <div class="label">Manage</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div class="info-box">
+            <h3 style="color: var(--primary); margin-bottom: 0.75rem; font-size: 1.25rem;">⬆️ Upload Images</h3>
+            <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                Upload original images and create new versions. The system automatically computes pixel differences and stores them efficiently.
+            </p>
+            <a href="/upload/" class="btn btn-primary">Go to Upload</a>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: var(--primary); margin-bottom: 0.75rem; font-size: 1.25rem;">🔄 Recombine Versions</h3>
+            <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                Reconstruct any version from the original image and transformation matrices. Fast and efficient reconstruction.
+            </p>
+            <a href="/recombine/" class="btn btn-primary">Go to Recombine</a>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: var(--primary); margin-bottom: 0.75rem; font-size: 1.25rem;">🗑️ Manage Data</h3>
+            <p style="color: var(--gray-600); margin-bottom: 1rem;">
+                Delete all images, matrices, and reset the database. Use with caution as this action cannot be undone.
+            </p>
+            <a href="/delete/" class="btn btn-danger">Delete All Data</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

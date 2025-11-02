@@ -1,0 +1,8 @@
+temp-docs/
+progress.md
+.env
+__pycache__/
+venv/
+images/
+transformations/
+state/

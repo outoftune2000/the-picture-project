@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Delete All Data - Image VCS{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🗑️ Delete All Data</h2>
+    
+    {% if success %}
+        <div class="alert alert-success">
+            <h3 style="margin-bottom: 0.75rem; font-size: 1.25rem;">✓ Deletion Complete</h3>
+            <p>{{ message }}</p>
+            
+            {% if deleted_items %}
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--success);">
+                <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Deleted Items Summary</h3>
+                
+                <div class="stats" style="margin-bottom: 1.5rem;">
+                    <div class="stat-card">
+                        <div class="number">{{ deleted_items.images|length }}</div>
+                        <div class="label">Images Deleted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">{{ deleted_items.matrices|length }}</div>
+                        <div class="label">Matrices Deleted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">{{ deleted_items.metadata|length }}</div>
+                        <div class="label">Metadata Deleted</div>
+                    </div>
+                </div>
+
+                {% if deleted_items.images %}
+                <details>
+                    <summary>View Deleted Image Files ({{ deleted_items.images|length }})</summary>
+                    <div class="file-list">
+                        <ul>
+                            {% for item in deleted_items.images %}
+                            <li>✓ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+                {% endif %}
+                
+                {% if deleted_items.matrices %}
+                <details>
+                    <summary>View Deleted Matrix Files ({{ deleted_items.matrices|length }})</summary>
+                    <div class="file-list">
+                        <ul>
+                            {% for item in deleted_items.matrices %}
+                            <li>✓ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+                {% endif %}
+                
+                {% if deleted_items.metadata %}
+                <details>
+                    <summary>View Deleted Metadata Files ({{ deleted_items.metadata|length }})</summary>
+                    <div class="file-list">
+                        <ul>
+                            {% for item in deleted_items.metadata %}
+                            <li>✓ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+                {% endif %}
+                
+                {% if deleted_items.errors %}
+                <div class="alert alert-error" style="margin-top: 1.5rem;">
+                    <strong>⚠️ Errors ({{ deleted_items.errors|length }}):</strong>
+                    <details style="margin-top: 0.5rem;">
+                        <summary>View Errors</summary>
+                        <ul style="list-style: none; margin-top: 0.5rem;">
+                            {% for error in deleted_items.errors %}
+                            <li style="padding: 0.5rem 0; color: var(--danger-dark);">✗ {{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div style="margin-top: 2rem;">
+                <a href="/" class="btn btn-primary">🏠 Return to Home</a>
+            </div>
+        </div>
+    {% else %}
+        {% if summary %}
+        <div class="card" style="background: var(--gray-50); margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">📊 Current Data Summary</h3>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number">{{ summary.image_collections }}</div>
+                    <div class="label">Image Collections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{{ summary.original_images }}</div>
+                    <div class="label">Original Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{{ summary.version_images }}</div>
+                    <div class="label">Version Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{{ summary.matrices }}</div>
+                    <div class="label">Matrix Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{{ summary.metadata_files }}</div>
+                    <div class="label">Metadata Files</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="alert alert-error">
+            <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">⚠️ Warning: This Action Cannot Be Undone</h3>
+            <p style="margin-bottom: 0.75rem; font-weight: 600;">This will permanently delete:</p>
+            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                <li style="padding: 0.25rem 0;">All images in <code style="background: rgba(0,0,0,0.1); padding: 0.125rem 0.25rem; border-radius: 0.25rem;">images/original/</code></li>
+                <li style="padding: 0.25rem 0;">All images in <code style="background: rgba(0,0,0,0.1); padding: 0.125rem 0.25rem; border-radius: 0.25rem;">images/versions/</code></li>
+                <li style="padding: 0.25rem 0;">All matrix files in <code style="background: rgba(0,0,0,0.1); padding: 0.125rem 0.25rem; border-radius: 0.25rem;">transformations/</code></li>
+                <li style="padding: 0.25rem 0;">All metadata files in <code style="background: rgba(0,0,0,0.1); padding: 0.125rem 0.25rem; border-radius: 0.25rem;">images/metadata/</code></li>
+                <li style="padding: 0.25rem 0;">All state in the index database</li>
+            </ul>
+            <p style="font-weight: 700; color: var(--danger);">⚠️ This action cannot be undone!</p>
+        </div>
+        
+        {% if error %}
+        <div class="alert alert-warning">
+            <p><strong>⚠️ Error:</strong> {{ error }}</p>
+            {% if debug_trace %}
+            <details style="margin-top: 0.5rem;">
+                <summary>Debug Trace</summary>
+                <pre style="background: var(--gray-100); padding: 1rem; border-radius: var(--radius); overflow-x: auto; font-size: 0.875rem; margin-top: 0.5rem;">{{ debug_trace }}</pre>
+            </details>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="card" style="background: var(--gray-50); border-left: 4px solid var(--warning); margin-bottom: 2rem; transition: background 0.3s ease;">
+            <form method="post">
+                {% csrf_token %}
+                <p style="font-weight: 600; margin-bottom: 1rem;">
+                    To confirm deletion, type <strong>"yes"</strong> in the box below:
+                </p>
+                <div class="form-group">
+                    <input 
+                        type="text" 
+                        name="confirm" 
+                        placeholder="Type 'yes' to confirm" 
+                        required 
+                        autocomplete="off"
+                        style="border: 2px solid var(--gray-300); background: var(--white); transition: border-color 0.3s ease;"
+                        onfocus="this.style.borderColor='var(--danger)'"
+                        onblur="this.style.borderColor='var(--gray-300)'"
+                    />
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-danger">
+                        🗑️ Delete All Data
+                    </button>
+                    <a href="/" class="btn btn-secondary">
+                        ✕ Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

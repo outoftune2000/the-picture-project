@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Recombine - Image VCS{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🔄 Recombine Version</h2>
+    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+        Reconstruct an image version from the original image and transformation matrix.
+    </p>
+
+    {% if message %}
+    <div class="alert alert-success">
+        <strong>✓ Success:</strong> {{ message }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-error">
+        <strong>✗ Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="collection">Collection Name</label>
+            <input 
+                type="text" 
+                id="collection" 
+                name="collection" 
+                placeholder="e.g., photo" 
+                required 
+                value="{{ collection|default:'' }}"
+            />
+            <p style="color: var(--gray-500); font-size: 0.875rem; margin-top: 0.5rem;">
+                Must match the collection name used during upload
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label for="to_version">Version to Reconstruct</label>
+            <input 
+                type="number" 
+                id="to_version" 
+                name="to_version" 
+                value="{{ to_version|default:'2' }}" 
+                required 
+                min="2"
+            />
+            <p style="color: var(--gray-500); font-size: 0.875rem; margin-top: 0.5rem;">
+                All versions are computed from the original image (v1)
+            </p>
+            <input type="hidden" name="from_version" value="1" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            🔄 Recombine Version
+        </button>
+    </form>
+
+    {% if debug_orig %}
+    <div class="info-box" style="margin-top: 1.5rem;">
+        <strong>Original:</strong> {{ debug_orig }}
+    </div>
+    {% endif %}
+
+    {% if debug_matrix %}
+    <div class="info-box" style="margin-top: 1rem;">
+        <strong>Matrix:</strong> {{ debug_matrix }}
+    </div>
+    {% endif %}
+
+    {% if debug_matrix_content %}
+    <div class="alert alert-info" style="margin-top: 1.5rem;">
+        <strong>ℹ️ Info:</strong> {{ debug_matrix_content }}
+    </div>
+    {% endif %}
+
+    {% if output %}
+    <div class="alert alert-success" style="margin-top: 1.5rem;">
+        <strong>✓ Output saved to:</strong> {{ output }}
+    </div>
+    {% endif %}
+
+    {% if original_image_url and recombined_image_url %}
+    <div class="card" style="margin-top: 2rem;">
+        <h2 style="margin-bottom: 1.5rem;">🖼️ Image Previews</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div>
+                <h3 style="color: var(--gray-800); font-size: 1.125rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📷</span> Original Image (v1)
+                </h3>
+                <div style="border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid var(--gray-200); background: var(--white);">
+                    <img 
+                        src="{{ original_image_url }}" 
+                        alt="Original Image" 
+                        style="width: 100%; height: auto; display: block;"
+                        onerror="this.parentElement.innerHTML='<div style=\'padding: 2rem; text-align: center; color: var(--gray-500);\'><p>Original image not found</p></div>'"
+                    />
+                </div>
+            </div>
+            <div>
+                <h3 style="color: var(--gray-800); font-size: 1.125rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🔄</span> Recombined Image (v{{ to_version }})
+                </h3>
+                <div style="border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid var(--gray-200); background: var(--white);">
+                    <img 
+                        src="{{ recombined_image_url }}" 
+                        alt="Recombined Image" 
+                        style="width: 100%; height: auto; display: block;"
+                        onerror="this.parentElement.innerHTML='<div style=\'padding: 2rem; text-align: center; color: var(--gray-500);\'><p>Recombined image not found</p></div>'"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
